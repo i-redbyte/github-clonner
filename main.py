@@ -1,6 +1,7 @@
 import json
 import os
 
+import git
 import requests
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
@@ -10,6 +11,7 @@ load_dotenv()
 token = os.getenv('TOKEN')
 userName = os.getenv('USER_NAME')
 organizationName = os.getenv('ORGANIZATION_NAME')
+targetDir = os.getenv('TARGET_DIR')
 
 
 def main_resp(url):
@@ -31,4 +33,8 @@ while nextUrl:
 
     respCon = json.loads(resp.content)
     with open('repolist.txt', 'a') as fh:
-        fh.writelines([f'{respconi["full_name"]}\n' for respconi in respCon])
+        for rci in respCon:
+            repos = rci["full_name"]
+            print(repos)
+            fh.writelines([f'{repos}\n'])
+            git.Git(targetDir).clone(f'git@github.com:{repos}.git')
