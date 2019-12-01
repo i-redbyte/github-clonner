@@ -1,11 +1,15 @@
 import json
+import os
+
 import requests
+from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
 import links_from_header
 
-token = ''
-userName = ''
-organizationName = ''
+load_dotenv()
+token = os.getenv('TOKEN')
+userName = os.getenv('USER_NAME')
+organizationName = os.getenv('ORGANIZATION_NAME')
 
 
 def main_resp(url):
