@@ -4,6 +4,7 @@ import os
 import git
 import requests
 from dotenv import load_dotenv
+from git import GitCommandError
 from requests.auth import HTTPBasicAuth
 import links_from_header
 
@@ -37,4 +38,7 @@ while nextUrl:
             repos = rci["full_name"]
             print(repos)
             fh.writelines([f'{repos}\n'])
-            git.Git(targetDir).clone(f'git@github.com:{repos}.git')
+            try:
+                git.Git(targetDir).clone(f'git@github.com:{repos}.git')
+            except GitCommandError:
+                print("Skip")
