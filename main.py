@@ -23,7 +23,10 @@ def clone_or_rebase(repo_path, repo_name):
     try:
         repo = Repo(repo_path)
         if not repo.bare:
-            print('Repo at {} successfully loaded.'.format(repo_path))
+            origin = Remote(repo, 'origin')
+            origin.pull(rebase=True)
+            print('Repo at {} successfully pull --rebase.'.format(repo_path))
+
     except git.NoSuchPathError:
         try:
             git.Git(targetDir).clone(f'git@github.com:{repo_name}.git')
@@ -49,7 +52,7 @@ while nextUrl:
     with open('repolist.txt', 'a') as fh:
         for rci in respCon:
             repos = rci["full_name"]
-            print(f'Clone now{repos}')
+            print(f'!=Now=! {repos}')
             fh.writelines([f'{repos}\n'])
             path = f'{targetDir}/{repos.split("/")[1]}'
             clone_or_rebase(path, repos)
