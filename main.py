@@ -4,7 +4,7 @@ import os
 import git
 import requests
 from dotenv import load_dotenv
-from git import GitCommandError
+from git import GitCommandError, Remote, Repo
 from requests.auth import HTTPBasicAuth
 import links_from_header
 
@@ -17,6 +17,19 @@ targetDir = os.getenv('TARGET_DIR')
 
 def main_resp(url):
     return requests.get(url, auth=HTTPBasicAuth(userName, token))
+
+
+def clone_or_rebase(repo_path, repo_name):
+    try:
+        repo = Repo(repo_path)
+        if not repo.bare:
+            print('Repo at {} successfully loaded.'.format(repo_path))
+    except git.NoSuchPathError:
+        try:
+            git.Git(targetDir).clone(f'git@github.com:{repo_name}.git')
+            print(f'Cloning {repos} success')
+        except Exception:
+            print(f'Fail on {repo_path}')
 
 
 nextUrl = f"https://api.github.com/orgs/{organizationName}/repos?per_page=100"
@@ -36,9 +49,7 @@ while nextUrl:
     with open('repolist.txt', 'a') as fh:
         for rci in respCon:
             repos = rci["full_name"]
-            print(repos)
+            print(f'Clone now{repos}')
             fh.writelines([f'{repos}\n'])
-            try:
-                git.Git(targetDir).clone(f'git@github.com:{repos}.git')
-            except GitCommandError:
-                print("Skip")
+            path = f'{targetDir}/{repos.split("/")[1]}'
+            clone_or_rebase(path, repos)
